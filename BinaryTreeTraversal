@@ -1,0 +1,395 @@
+package DataStructures;
+
+import java.util.*;
+import java.util.Stack;
+
+/**
+ * Created by Syril on 19-03-2016.
+ */
+public class BinaryTreeTraversal {
+
+    static void preOrderTraversal(BinarySearchTree.Node root) {
+        if (root == null)
+            return;
+        java.util.Stack stack = new Stack();
+        while (true) {
+            while (root != null) {
+                stack.push(root);
+                System.out.println(root.data);
+                root = root.getLeft();
+            }
+
+            if (stack.isEmpty())
+                break;
+            root = (BinarySearchTree.Node) stack.pop();
+            root = root.getRight();
+        }
+    }
+
+
+    static Integer[] inOrderTraversal(BinarySearchTree.Node root) {
+        Integer[] array = new Integer[100];
+        int i = 0;
+        if (root == null)
+            return new Integer[0];
+
+        Stack stack = new Stack();
+        while (true) {
+            while (root != null) {
+                stack.push(root);
+                root = root.getLeft();
+            }
+
+            if (stack.isEmpty())
+                break;
+            root = (BinarySearchTree.Node) stack.pop();
+            array[i++] = root.getData();
+            root = root.getRight();
+        }
+
+        for (int j = 0; j < i; j++) {
+            System.out.print(" " + array[j]);
+        }
+
+        return array;
+
+    }
+
+    static Integer[] postOrderTraversal(BinarySearchTree.Node root) {
+        Integer[] array = new Integer[100];
+        int i = 0;
+        if (root == null)
+            return new Integer[0];
+        Stack<BinarySearchTree.Node> stack = new Stack<>();
+        Stack<BinarySearchTree.Node> output = new Stack<>();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            BinarySearchTree.Node current = stack.peek();
+            output.push(current);
+            stack.pop();
+            if (current.getLeft() != null)
+                stack.push(current.getLeft());
+            if (current.getRight() != null)
+                stack.push(current.getRight());
+        }
+
+        while (!output.isEmpty()) {
+            array[i] = output.pop().getData();
+            i++;
+        }
+
+        for (int j = 0; j < i; j++) {
+            System.out.println(array[j]);
+        }
+
+        return array;
+    }
+
+    static void levelOrderTraversal(BinarySearchTree.Node root) {
+        if (root == null)
+            return;
+        Queue queue = new LinkedList();
+        BinarySearchTree.Node temp;
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            temp = (BinarySearchTree.Node) queue.remove();
+            System.out.print(temp.getData() +" ");
+            if (temp.getLeft() != null)
+                queue.add(temp.getLeft());
+            if (temp.getRight() != null)
+                queue.add(temp.getRight());
+        }
+    }
+
+
+    /**
+     * Idea here is to use inorder and postorder
+     * Example : For 1 and 25 here
+     * Inorder : 1, 5,10,15,20,25,30,35,40,60,80,100  i.e consider elements between 1 and 25 : 5,10,15,20
+     * PostOrder : 1,5,15,10,25,35,30,20,60,80,100 Here find the value which has highest index. In this case its 20
+     *
+     * @param root
+     * @param n1
+     * @param n2
+     * @return
+     */
+    static int lowestCommonAncestor(BinarySearchTree.Node root, int n1, int n2) {
+        int maxIndex = 0;
+        Integer[] inOrder = inOrderTraversal(root);
+        Integer[] postOrder = postOrderTraversal(root);
+        Map<Integer, Integer> probableValues = new HashMap<>();
+        int n1Index = Arrays.asList(inOrder).indexOf(n1);
+        int n2Index = Arrays.asList(inOrder).indexOf(n2);
+
+        for (int i = n1Index + 1; i < n2Index; i++) {
+            probableValues.put(inOrder[i], i);
+        }
+
+        Iterator itr = probableValues.keySet().iterator();
+        while (itr.hasNext()) {
+            int number = (int) itr.next();
+            int numberIndex = Arrays.asList(postOrder).indexOf(number);
+            if (numberIndex > maxIndex) {
+                maxIndex = numberIndex;
+            }
+        }
+
+        return postOrder[maxIndex];
+    }
+
+    static BinarySearchTree.Node findMax(BinarySearchTree.Node root) {
+        if (root == null) return root;
+        while (root.getRight() != null) {
+            root = root.getRight();
+        }
+        return root;
+    }
+
+    static BinarySearchTree.Node findMin(BinarySearchTree.Node root) {
+        if (root == null) return root;
+        while (root.getLeft() != null) {
+            root = root.getLeft();
+        }
+        return root;
+    }
+
+    static BinarySearchTree.Node delete(BinarySearchTree.Node root, int data) {
+
+        if (data < root.getData())
+            root.left = delete(root.getLeft(), data);
+        else if (data > root.getData())
+            root.right = delete(root.getRight(), data);
+        else if (root.left != null && root.right != null) // Two children
+        {
+            root.data = findMin(root.right).data;
+            root.right = delete(root.right, root.data);
+        } else
+            root = (root.left != null) ? root.left : root.right;
+        return root;
+    }
+
+    static boolean binaryTreeSearch(BinarySearchTree.Node root, int data) {
+        BinarySearchTree.Node temp;
+        if (root == null)
+            return false;
+        Queue<BinarySearchTree.Node> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            temp = queue.remove();
+            if (data == temp.getData())
+                return true;
+            if (temp.getLeft() != null)
+                queue.add(temp.getLeft());
+            if (temp.getRight() != null)
+                queue.add(temp.getRight());
+        }
+
+        return false;
+    }
+
+    static void verticalOrder(BinarySearchTree.Node root, TreeMap<Integer, String> map, int hd) {
+        if (root == null)
+            return;
+        if (map.get(hd) != null) {
+            map.put(hd, map.get(hd) + "," + root.getData());
+        } else {
+            map.put(hd, String.valueOf(root.getData()));
+        }
+
+        verticalOrder(root.getLeft(), map, hd - 1);
+        verticalOrder(root.getRight(), map, hd + 1);
+    }
+
+
+    static void verticalOrderTraversal(BinarySearchTree.Node root, TreeMap<Integer, String> map) {
+        if (root == null)
+            return;
+        Queue queue = new LinkedList();
+        BinarySearchTree.Node temp;
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            temp = (BinarySearchTree.Node) queue.remove();
+
+            if (map.get(temp.level) != null) {
+                map.put(temp.level, map.get(temp.level) + ", " + temp.getData());
+            } else {
+                map.put(temp.level, String.valueOf(temp.data));
+            }
+
+            if (temp.getLeft() != null) {
+                temp.getLeft().level = temp.level - 1;
+                queue.add(temp.getLeft());
+            }
+
+            if (temp.getRight() != null) {
+                temp.getRight().level = temp.level + 1;
+                queue.add(temp.getRight());
+            }
+
+        }
+    }
+
+    static void verticalOrderTraversalSum(BinarySearchTree.Node root, TreeMap<Integer, String> map) {
+        if (root == null)
+            return;
+        Queue queue = new LinkedList();
+        BinarySearchTree.Node temp;
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            temp = (BinarySearchTree.Node) queue.remove();
+
+            if (map.get(temp.level) != null) {
+                map.put(temp.level, String.valueOf(Integer.parseInt(map.get(temp.level)) + temp.getData()));
+            } else {
+                map.put(temp.level, String.valueOf(temp.data));
+            }
+
+            if (temp.getLeft() != null) {
+                temp.getLeft().level = temp.level - 1;
+                queue.add(temp.getLeft());
+            }
+
+            if (temp.getRight() != null) {
+                temp.getRight().level = temp.level + 1;
+                queue.add(temp.getRight());
+            }
+
+        }
+    }
+
+
+    /**
+     * The idea here is to use a set to have already visited level so that duplicate levels wont be printed and
+     * since its level order we always end up printing the top view of tree
+     *
+     * @param root
+     */
+    static void topViewOfTree(BinarySearchTree.Node root) {
+        if (root == null)
+            return;
+        Queue queue = new LinkedList();
+        BinarySearchTree.Node temp;
+        queue.add(root);
+
+        Set<Integer> levelSet = new HashSet<>();
+        while (!queue.isEmpty()) {
+            temp = (BinarySearchTree.Node) queue.remove();
+
+            if (!levelSet.contains(temp.level)) {
+                levelSet.add(temp.level);
+                System.out.println(temp.getData());
+            }
+
+            if (temp.getLeft() != null) {
+                temp.getLeft().level = temp.level - 1;
+                queue.add(temp.getLeft());
+            }
+
+            if (temp.getRight() != null) {
+                temp.getRight().level = temp.level + 1;
+                queue.add(temp.getRight());
+            }
+
+        }
+    }
+
+    static void BSTToDLL(BinarySearchTree.Node root) {
+        if (root == null)
+            return;
+        Queue<BinarySearchTree.Node> queue = new LinkedList<>();
+        queue.add(root);
+        BinarySearchTree.Node node = null;
+        BinarySearchTree.Node last = null;
+        while (!queue.isEmpty()) {
+            node = queue.peek();
+            queue.remove();
+            if (node.left != null) {
+                queue.add(node.left);
+            }
+            if (node.right != null) {
+                queue.add(node.right);
+            }
+            node.right = queue.peek();
+            node.left = last;
+            last = node;
+        }
+
+    }
+
+
+    static int lowestCommonAncestorUsingIteration(BinarySearchTree.Node root, int n1, int n2) {
+        while (root != null) {
+
+            // If both n1 and n2 are greater than root, then LCA lies in left
+            if (root.data > n1 && root.data > n2) {
+                root = root.getLeft();
+            }
+
+            // If both n1 and n2 are smaller than root, then LCA lies in right
+            else if (root.data < n1 && root.data < n2) {
+                root = root.getRight();
+            } else break;
+        }
+
+        return root.data;
+    }
+
+
+    //Using two stack will solve the issue. Just observe the push order in stack s1 and s2
+    static void binaryTreeZigZagPrint(BinarySearchTree.Node root) {
+        if (root == null)
+            return;
+        Stack<BinarySearchTree.Node> s1 = new Stack();
+        Stack<BinarySearchTree.Node> s2 = new Stack();
+        s1.push(root);
+
+        while (!s1.isEmpty() || !s2.isEmpty()) {
+            while (!s1.isEmpty()) {
+                BinarySearchTree.Node temp = s1.peek();
+                s1.pop();
+                System.out.print(temp.data +" ");
+
+                // Note that is right is pushed before left
+                if (temp.right != null) {
+                    s2.push(temp.right);
+                }
+                if (temp.left != null)
+                    s2.push(temp.left);
+            }
+
+            while (!s2.isEmpty()) {
+                BinarySearchTree.Node temp = s2.peek();
+                s2.pop();
+                System.out.print(temp.data + " ");
+
+                // Note that is left is pushed before right
+                if (temp.left != null) {
+                    s1.push(temp.left);
+                }
+                if (temp.right != null)
+                    s1.push(temp.right);
+            }
+        }
+    }
+
+
+    //This will also sort the BST in Descending Order
+    static void mirror(BinarySearchTree.Node node){
+        if(node == null)
+            return;
+
+        BinarySearchTree.Node temp;
+        mirror(node.left);
+        mirror(node.right);
+
+        temp = node.left;
+        node.left = node.right;
+        node.right = temp;
+    }
+
+
+
+
+}
+
+
