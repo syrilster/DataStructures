@@ -93,7 +93,7 @@ public class BinaryTreeTraversal {
         queue.add(root);
         while (!queue.isEmpty()) {
             temp = (BinarySearchTree.Node) queue.remove();
-            System.out.print(temp.getData() +" ");
+            System.out.print(temp.getData() + " ");
             if (temp.getLeft() != null)
                 queue.add(temp.getLeft());
             if (temp.getRight() != null)
@@ -186,20 +186,6 @@ public class BinaryTreeTraversal {
 
         return false;
     }
-
-    static void verticalOrder(BinarySearchTree.Node root, TreeMap<Integer, String> map, int hd) {
-        if (root == null)
-            return;
-        if (map.get(hd) != null) {
-            map.put(hd, map.get(hd) + "," + root.getData());
-        } else {
-            map.put(hd, String.valueOf(root.getData()));
-        }
-
-        verticalOrder(root.getLeft(), map, hd - 1);
-        verticalOrder(root.getRight(), map, hd + 1);
-    }
-
 
     static void verticalOrderTraversal(BinarySearchTree.Node root, TreeMap<Integer, String> map) {
         if (root == null)
@@ -347,7 +333,7 @@ public class BinaryTreeTraversal {
             while (!s1.isEmpty()) {
                 BinarySearchTree.Node temp = s1.peek();
                 s1.pop();
-                System.out.print(temp.data +" ");
+                System.out.print(temp.data + " ");
 
                 // Note that is right is pushed before left
                 if (temp.right != null) {
@@ -374,8 +360,8 @@ public class BinaryTreeTraversal {
 
 
     //This will also sort the BST in Descending Order
-    static void mirror(BinarySearchTree.Node node){
-        if(node == null)
+    static void mirror(BinarySearchTree.Node node) {
+        if (node == null)
             return;
 
         BinarySearchTree.Node temp;
@@ -387,8 +373,18 @@ public class BinaryTreeTraversal {
         node.right = temp;
     }
 
+    static int maxDepth(BinarySearchTree.Node node) {
+        if (node == null)
+            return 0;
+        int lDepth = maxDepth(node.getLeft());
+        int rDepth = maxDepth(node.getRight());
 
-
+        if (lDepth > rDepth) {
+            return lDepth + 1;
+        } else {
+            return rDepth + 1;
+        }
+    }
 
 }
 
