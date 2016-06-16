@@ -1,9 +1,3 @@
-package DataStructures;
-
-/**
- * Created by syrils on 5/2/16.
- */
-public class BinaryTree {
     Node root;
 
     static class Node {
@@ -46,7 +40,7 @@ public class BinaryTree {
 
     public static void main(String args[]) {
         BinaryTree tree = new BinaryTree();
-        tree.root = new Node(1);
+        /*tree.root = new Node(1);
         tree.root.left = new Node(2);
         tree.root.right = new Node(3);
         tree.root.left.left = new Node(4);
@@ -61,5 +55,20 @@ public class BinaryTree {
                 tree.findLCA(3, 4).data);
         System.out.println("LCA(2, 4) = " +
                 tree.findLCA(2, 4).data);*/
+
+        tree.root = new Node(10);
+        tree.root.left = new Node(10);
+        tree.root.right = new Node(19);
+        tree.root.left.left = new Node(-5);
+        tree.root.right.left = new Node(17);
+        tree.root.right.right = new Node(21);
+        System.out.println(isBST(tree.root, Integer.MIN_VALUE, Integer.MAX_VALUE));
     }
-}
+
+    public static boolean isBST(Node root, int min, int max) {
+        if (root == null) return true;
+        if (root.data <= min || root.data > max) {
+            return false;
+        }
+        return isBST(root.left, min, root.data) && isBST(root.right, root.data, max);
+    }
