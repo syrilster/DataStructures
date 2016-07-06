@@ -6,7 +6,7 @@ import java.util.Stack;
 /**
  * Created by Syril on 19-03-2016.
  */
-public class BinaryTreeTraversal {
+public class BinarySearchTreeTraversal {
 
     static void preOrderTraversal(BinarySearchTree.Node root) {
         if (root == null)
@@ -101,41 +101,26 @@ public class BinaryTreeTraversal {
         }
     }
 
-
-    /**
-     * Idea here is to use inorder and postorder
-     * Example : For 1 and 25 here
-     * Inorder : 1, 5,10,15,20,25,30,35,40,60,80,100  i.e consider elements between 1 and 25 : 5,10,15,20
-     * PostOrder : 1,5,15,10,25,35,30,20,60,80,100 Here find the value which has highest index. In this case its 20
-     *
-     * @param root
-     * @param n1
-     * @param n2
-     * @return
-     */
-    static int lowestCommonAncestor(BinarySearchTree.Node root, int n1, int n2) {
-        int maxIndex = 0;
-        Integer[] inOrder = inOrderTraversal(root);
-        Integer[] postOrder = postOrderTraversal(root);
-        Map<Integer, Integer> probableValues = new HashMap<>();
-        int n1Index = Arrays.asList(inOrder).indexOf(n1);
-        int n2Index = Arrays.asList(inOrder).indexOf(n2);
-
-        for (int i = n1Index + 1; i < n2Index; i++) {
-            probableValues.put(inOrder[i], i);
+    static void levelOrderTraversalReverse(BinarySearchTree.Node root) {
+        if (root == null)
+            return;
+        Queue queue = new LinkedList();
+        Stack stack = new Stack();
+        BinarySearchTree.Node temp;
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            temp = (BinarySearchTree.Node) queue.remove();
+            if (temp.getRight() != null)
+                queue.add(temp.getRight());
+            if (temp.getLeft() != null)
+                queue.add(temp.getLeft());
+            stack.add(temp.data);
         }
-
-        Iterator itr = probableValues.keySet().iterator();
-        while (itr.hasNext()) {
-            int number = (int) itr.next();
-            int numberIndex = Arrays.asList(postOrder).indexOf(number);
-            if (numberIndex > maxIndex) {
-                maxIndex = numberIndex;
-            }
+        while (!stack.isEmpty()) {
+            System.out.print(stack.pop() + " ");
         }
-
-        return postOrder[maxIndex];
     }
+
 
     static BinarySearchTree.Node findMax(BinarySearchTree.Node root) {
         if (root == null) return root;
@@ -187,19 +172,22 @@ public class BinaryTreeTraversal {
         return false;
     }
 
-    static void verticalOrderTraversal(BinarySearchTree.Node root, TreeMap<Integer, String> map) {
+    static void verticalOrderTraversal(BinarySearchTree.Node root) {
         if (root == null)
             return;
         Queue queue = new LinkedList();
         BinarySearchTree.Node temp;
         queue.add(root);
+        TreeMap<Integer, String> map = new TreeMap<>();
+        int level = 0;
         while (!queue.isEmpty()) {
             temp = (BinarySearchTree.Node) queue.remove();
+            level = temp.level;
 
-            if (map.get(temp.level) != null) {
-                map.put(temp.level, map.get(temp.level) + ", " + temp.getData());
+            if (map.get(level) != null) {
+                map.put(level, map.get(level) + " " + temp.getData());
             } else {
-                map.put(temp.level, String.valueOf(temp.data));
+                map.put(level, String.valueOf(temp.data));
             }
 
             if (temp.getLeft() != null) {
@@ -212,6 +200,10 @@ public class BinaryTreeTraversal {
                 queue.add(temp.getRight());
             }
 
+        }
+
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            System.out.print(entry.getValue() + " ");
         }
     }
 
@@ -276,6 +268,38 @@ public class BinaryTreeTraversal {
                 queue.add(temp.getRight());
             }
 
+        }
+    }
+
+    static void bottomViewOfTree(BinarySearchTree.Node root) {
+        if (root == null)
+            return;
+        Queue queue = new LinkedList();
+        BinarySearchTree.Node temp;
+        queue.add(root);
+
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        int level = 0;
+        while (!queue.isEmpty()) {
+            temp = (BinarySearchTree.Node) queue.remove();
+            level = temp.level;
+
+            map.put(level, temp.data);
+
+            if (temp.getLeft() != null) {
+                temp.getLeft().level = temp.level - 1;
+                queue.add(temp.getLeft());
+            }
+
+            if (temp.getRight() != null) {
+                temp.getRight().level = temp.level + 1;
+                queue.add(temp.getRight());
+            }
+
+        }
+
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            System.out.print(entry.getValue() + " ");
         }
     }
 
@@ -383,6 +407,30 @@ public class BinaryTreeTraversal {
             return lDepth + 1;
         } else {
             return rDepth + 1;
+        }
+    }
+
+    public static void MorrisInOrder(BinarySearchTree.Node root) {
+        if (root == null) return;
+        BinarySearchTree.Node current = root;
+        while (current != null) {
+            if (current.left == null) {
+                System.out.print(current.data + " ");
+                current = current.right;
+            } else {
+                BinarySearchTree.Node predecessor = current.left;
+                while (predecessor.right != null && predecessor.right != current) {
+                    predecessor = predecessor.right;
+                }
+                if (predecessor.right == null) {
+                    predecessor.right = current;
+                    current = current.left;
+                } else {
+                    predecessor.right = null;
+                    System.out.print(current.data + " ");
+                    current = current.right;
+                }
+            }
         }
     }
 
