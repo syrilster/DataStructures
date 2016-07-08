@@ -326,22 +326,16 @@ public class BinarySearchTreeTraversal {
 
     }
 
-
-    static int lowestCommonAncestorUsingIteration(BinarySearchTree.Node root, int n1, int n2) {
-        while (root != null) {
-
-            // If both n1 and n2 are greater than root, then LCA lies in left
-            if (root.data > n1 && root.data > n2) {
-                root = root.getLeft();
-            }
-
-            // If both n1 and n2 are smaller than root, then LCA lies in right
-            else if (root.data < n1 && root.data < n2) {
-                root = root.getRight();
-            } else break;
-        }
-
-        return root.data;
+    // Idea here is to extend search in BST to include both n1 and n2 and recur.
+    static int lowestCommonAncestor(BinarySearchTree.Node root, int n1, int n2) {
+        if (root == null)
+            return 0;
+        if (n1 < root.data && n2 < root.data)
+            return lowestCommonAncestor(root.left, n1, n2);
+        else if (n1 > root.data && n2 > root.data)
+            return lowestCommonAncestor(root.right, n1, n2);
+        else
+            return root.data;
     }
 
 
